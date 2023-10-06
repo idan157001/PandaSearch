@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PandaSearch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    {% endblock head %}
+    <!-- Add your CSS links or inline styles here -->
+</head>
+<body>
+    <header>
+        
+        <!-- Add navigation links or other header content here -->
+    </header>
+
+    <main>
+        <div class="Search">
+            <h2>Search Item</h2>
+            <div class="Search_bar">
+            <form action="/search" method="get">
+                <input type="text" id="search" name="item" placeholder="">
+                <button type="submit">Search</button>
+            </form>
+            <!-- Content for your web page goes here -->
+            </div>
+        </div>
+        {% if error %}
+            <p id="error">Item Not Found</p>
+        {% endif %}
+
+        {% if items %}
+            <div class="image-container">
+
+            {% for item in items %}
+                {%for item_name in item %}
+                    {%set item_link = item[item_name]['link']%}
+                    {%set item_dollar = item[item_name]['dollar_price']%}
+                    {%set item_cny = item[item_name]['cny_price']%}
+                    {%set file_name = item[item_name]['file_name']%}
+                    <li class="product">
+                    <a href="{{item_link}}" target="_blank" >
+                        <img src="/images/{{file_name}}" alt="{{item_name}}"></img>
+                    </a>
+                        <div class="product_data">
+                            <p id="dollar_price">{{item_cny}}¥</p>
+                        </div>
+                    
+                    </li>
+                    
+                {%endfor%}
+            {% endfor %}
+            </div>
+        {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer content goes here -->
+        <p></p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,177 @@
+body {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f0f0; /* Optional background color */
+}
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.Search {
+    position: absolute;
+    top: 125px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+main h2 {text-align: center;}
+
+.Search_bar {
+    margin-top: 50px; /* Add margin to the top to push the search bar down */
+    text-align: center;
+    padding: 20px;
+}
+.Search_bar {
+    margin: 0px;
+    text-align: center;
+    padding: 20px;
+    display: flex; /* Use flexbox to make input and button inline */
+    align-items: center; /* Center vertically within the .Search_bar */
+}
+
+/* Set the size of the search input */
+.Search_bar input[type="text"] {
+    flex: 1;
+    height: 40px;
+    padding: 10px;
+    font-size: 20px; /* Adjust the font size as needed */
+    width: 90%; /* Use a percentage for the width */
+    font-family: "Roboto", sans-serif;
+}
+
+/* Style the search button */
+.Search_bar button {
+    background-color: blue; /* Change the button's background color to blue */
+    color: white; /* Set text color to white */
+    padding: 18px 24px; /* Adjust padding for size */
+    font-size: 18px; /* Increase font size */
+    border: none; /* Remove the default button border */
+    cursor: pointer; /* Add a cursor pointer on hover */
+    border-radius: 20px;
+    margin-top: 10px;
+}
+#error {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background-color: rgba(255, 0, 0, 0.5);
+    padding: 10px;
+}
+/* Add responsive styles for smaller screens (e.g., mobile devices) */
+@media (max-width: 768px) {
+    .Search {
+        /* Center the content vertically and horizontally for mobile devices */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 20vh;
+        
+    }
+
+    .Search_bar {
+        text-align: center;
+    }
+
+    .Search_bar button {
+        
+        margin: 5px 0; /* Add margin between input and button */
+    }
+
+    h2,#error{
+        font-size: 4vw;
+    }
+    #error{
+        top: calc(60vw + 10px);
+    }
+    .image-container {
+        margin-top: 30vh;
+        padding-right: 55px;
+    }
+    li.product img {
+        width: 160% !important;
+        max-height: 100% !important;
+    }
+    
+
+    
+    
+    .image-container img:nth-child(5n) {
+        margin-bottom: 10px; /* Reduce the margin for smaller screens */
+    }
+}
+
+
+
+
+.image-container {
+    width: 80%;
+    margin: 0 auto; /* Center the container horizontally */
+    max-height: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 30vh; /* Default margin for larger screens */
+}
+
+.image-container .product {
+    width: calc(35% - 15px); /* 25% width for each item with 15px gap */
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 10px;
+    display: inline-block; /* Display items inline in a row */
+    float: left; /* Float items to the left */
+    text-align: center; /* Center content horizontally */
+    padding: 10px; /* Add padding for spacing and appearance */
+}
+
+.image-container .product img {
+    width: 100%; /* Make images fill the width of their container */
+    max-height: 100%; /* Maintain the aspect ratio */
+}
+
+/* Create a 50px height space after every 5 images */
+.image-container img:nth-child(5n) {
+    margin-bottom: 50px;
+}
+
+li.product {
+    position: relative;
+    list-style: none;
+    width: calc(25% - 15px); /* Adjust width as needed */
+    max-width: 300px; /* Limit the width */
+    height: auto; /* Maintain the aspect ratio */
+    margin-bottom: 10px; /* Add margin for spacing */
+    display: inline-block; /* Display items inline in a row */
+    float: left; /* Float items to the left */
+    text-align: center; /* Center content horizontally */
+    padding: 10px; /* Add padding for spacing and appearance */
+}
+
+li.product img {
+    width: 100%; /* Make images fill the width of their container */
+    max-height: 100%; /* Maintain the aspect ratio */
+}
+
+.product_data {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: auto; /* Allow the width to adjust responsively */
+    color: black;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    font-weight: bold; /* Make the text inside the <p> tag bold */
+
+}
+
+
+
