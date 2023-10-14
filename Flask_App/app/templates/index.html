@@ -17,10 +17,10 @@
 
     <main>
         <div class="Search">
-            <h2>Search Item</h2>
+            <h2>Products</h2>
             <div class="Search_bar">
             <form action="/search" method="get">
-                <input type="text" id="search" name="item" placeholder="">
+                <input type="text" id="search" name="item" placeholder="" maxlength="30">
                 <button type="submit">Search</button>
             </form>
             <!-- Content for your web page goes here -->
@@ -31,28 +31,41 @@
         {% endif %}
 
         {% if items %}
-            <div class="image-container">
+            <div class="product_containers">
 
             {% for item in items %}
-                {%for item_name in item %}
-                    {%set item_link = item[item_name]['link']%}
-                    {%set item_dollar = item[item_name]['dollar_price']%}
-                    {%set item_cny = item[item_name]['cny_price']%}
-                    {%set file_name = item[item_name]['file_name']%}
+                    {%set item_link = item['link']%}
+                    {%set item_dollar = item['dollar_price']%}
+                    {%set item_cny = item['cny_price']%}
+                    {%set file_name = item['file_name']%}
+                    {%set reviews = item['reviews']%}
                     <li class="product">
-                    <a href="{{item_link}}" target="_blank" >
-                        <img src="/images/{{file_name}}" alt="{{item_name}}"></img>
-                    </a>
-                        <div class="product_data">
-                            <p id="dollar_price">{{item_cny}}¥</p>
-                        </div>
-                    
+                        <a href="{{item_link}}" target="_blank" >
+                            <img  class="product_img"src="/images/{{file_name}}" alt="{{item_name}}"></img>
+                        </a>
+
+                            <div class="product_data">
+                                <p id="dollar_price">{{item_cny}}¥</p>
+                                <div class="stars-container">
+                                    {% if reviews > 10 %}
+                                        <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
+                                        {% if reviews > 50 %}
+                                            <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
+                                            {% endif %}
+                                        {% if reviews > 100 %}
+                                            <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
+                                            {% endif %}
+                                        {% endif %}
+                                </div>
+                            </div>
+
+                            
                     </li>
                     
-                {%endfor%}
             {% endfor %}
             </div>
         {% endif %}
+        
         </div>
     </main>
 

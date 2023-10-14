@@ -7,7 +7,11 @@ import urllib.parse
 import json
 import re
 import os
-
+from PIL import Image
+import io
+import cv2
+import numpy as np
+from datetime import datetime
 
 
 My_Urls = []
@@ -26,6 +30,9 @@ user_agents = [
 
 async def fetch_reviews(url) -> int:
     try:
+        if url == 'bad_link':
+            return 0
+        
         random_user_agent = random.choice(user_agents)
         headers = {"User-Agent": random_user_agent}
 
@@ -33,9 +40,11 @@ async def fetch_reviews(url) -> int:
         if response.status_code == 200:
             text = json.loads(response.text)
             reviews_count = (text['data']['count'])
-            return reviews_count
+            if reviews_count > 10:
+                return reviews_count
+            return 0
     except Exception as e:
-        raise e
+        return 0
 async def grab_link(url):
     #Change Affilate code to mine 
 
@@ -48,12 +57,12 @@ async def grab_link(url):
             url = response.url
             if 'https://www.pandabuy.com/product' not in url:
                 return None
-            
-            my_url = url.split("inviteCode=")[0] + 'inviteCode=ZGTWERRP3'
-            if my_url.startswith('https://www.pandabuy.com/product') and not my_url.endswith('&inviteCode=ZGTWERRP3'): # fix url where & is missing
-                my_url =  my_url.split("inviteCode=")[0] + '&inviteCode=ZGTWERRP3'
-                
-            return my_url
+            if 'weidian.com' in url:
+                my_url = url.split("inviteCode=")[0] + 'inviteCode=ZGTWERRP3'
+                if my_url.startswith('https://www.pandabuy.com/product') and not my_url.endswith('&inviteCode=ZGTWERRP3'): # fix url where & is missing
+                    my_url =  my_url.split("inviteCode=")[0] + '&inviteCode=ZGTWERRP3'
+                    
+                return my_url
         
 
     except Exception as e:
@@ -92,15 +101,24 @@ async def save_img(url,file_name):
     file_path = fr"C:\Users\Idan's PC\OneDrive\Desktop\Pandabuy\pandabuy\Items\{file_name}"
     random_user_agent = random.choice(user_agents)
     headers = {"User-Agent": random_user_agent}
+    try:
+        response = await asyncio.to_thread(requests.get, url, headers=headers,timeout=3)
+        if response.status_code == 200:
+            
+                print(file_path)
+                new_width = 400
+                new_height = 400
+                img_array = np.frombuffer(response.content, np.uint8)
+                img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+                resized_img = cv2.resize(img, (new_width, new_height))
+                cv2.imwrite(file_path, resized_img)
+    except:
+        return file_path
+        
 
-    response = await asyncio.to_thread(requests.get, url, headers=headers,timeout=10)
-    if response.status_code == 200:
-        with open(file_path,'wb') as file:
-            file.write(response.content)
-#test
 def check_brand(name):
     tags = []
-    sneaker_brands = {'dunks','vt','nike','adidas', 'air','jordan', 'air force', 'yeezy', 'bapesta', 'balenciaga', 'converse', 'off white', 'mcqueen', 'new balance', 'sacai', 'acg mountain', 'air max', 'louis vuitton', 'amiri'}
+    sneaker_brands = {'dunks','travis','dunk','vt','nike','adidas', 'air','jordan', 'air force', 'yeezy', 'bapesta', 'balenciaga', 'converse', 'off white', 'mcqueen', 'new balance', 'sacai', 'acg mountain', 'air max', 'louis vuitton', 'amiri'}
     for word in name.lower().split():
         if word in sneaker_brands:
             tags.append(word)
@@ -108,23 +126,34 @@ def check_brand(name):
 
         
 def get_name(name):
-    try:
-        name = ' '.join(name.split(' ')[1:])
-        name = re.sub(r'[\u4e00-\u9fff]+', '', name)
+    bad_chars = "!@#$%^&*}{/>,()"
+    bad_chars_pattern = re.escape(bad_chars)
 
-        if 'N1ke'in name:
-            name = name.replace('N1ke','Nike')
-        if '=' in name:
-            name = ' '.join(name.split('=')[:-1])
+
+    try:
+        name = ' '.join(name.split(' '))
+        name = re.sub(r'[\u4e00-\u9fff]+', '', name)
+        
+        if 'n1ke' in name.lower():
+            name =  re.sub(r'\bN1KE\b', 'Nike', name, flags=re.IGNORECASE)
+         
         if 'return' in name:
             name = ''.join(name.split('return')[:-1]) 
-        name = re.sub(r'[^a-zA-Z0-9 ]', '', name)
+        name = re.sub(f"[{bad_chars_pattern}].*", "", name) # remove not chars
+        name = re.sub(r'nk', 'Nike', name,flags=re.IGNORECASE)
+        name = re.sub(r'j0rdan', 'Jordan', name,flags=re.IGNORECASE)
+
+        name = re.sub(r'[^a-zA-Z0-9 ]', '', name) 
         name = (' '.join(name.split(' ')[:-1])).strip()
         
         return name
     except Exception as e:
         raise e
-        
+def get_today_date():
+    today = datetime.now()
+    date = today.strftime("%m/%d/%y")
+    return date
+
 async def fetch_data(url):
     
     parsed_url = urllib.parse.urlparse(url)
@@ -138,6 +167,7 @@ async def fetch_data(url):
 
         response = await asyncio.to_thread(requests.get, new_url, headers=headers,timeout=10)
         if response.status_code == 200:
+            upload_date = get_today_date()
             
             req = json.loads(response.text)
            
@@ -146,10 +176,11 @@ async def fetch_data(url):
             price = re.sub(r'00$', '', price)
             cny_price = int(price)
             img = results['itemMainPic']
+            
             name = get_name(results['itemTitle'])
             brand = check_brand(name)
             
-            return {'name':name,'img':img,'cny_price':cny_price,'link':url,'brand':brand}
+            return {'name':name,'img':img,'cny_price':cny_price,'link':url,'brand':brand,'upload_date':upload_date}
         else:
             print(response.url)
     except Exception as e:
