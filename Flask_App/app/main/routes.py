@@ -23,9 +23,10 @@ def home():
 
     if search:
         items = search_cls.search_runner(search)
-        return render_template('search.html',brands=brands,item=top_items,items=items)
-    else:
-        return render_template('search.html',brands=brands,item=top_items)
+        if items:
+            return render_template('search.html',brands=brands,item=top_items,items=items)
+        else:
+            return render_template('search.html',brands=brands,item=top_items)
 
 
 

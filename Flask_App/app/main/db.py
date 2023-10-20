@@ -3,6 +3,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import firebase_admin
 from firebase_admin import credentials,db
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class Search:
     _initialized = False
