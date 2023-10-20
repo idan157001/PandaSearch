@@ -12,6 +12,7 @@ import io
 import cv2
 import numpy as np
 from datetime import datetime
+from urllib.parse import urlparse, parse_qs, urlencode
 
 
 My_Urls = []
@@ -55,18 +56,25 @@ async def grab_link(url):
         response = await asyncio.to_thread(requests.get, url, headers=headers,timeout=10)
         if response.status_code == 200:
             url = response.url
+            
             if 'https://www.pandabuy.com/product' not in url:
                 return None
             if 'weidian.com' in url:
-                my_url = url.split("inviteCode=")[0] + 'inviteCode=ZGTWERRP3'
-                if my_url.startswith('https://www.pandabuy.com/product') and not my_url.endswith('&inviteCode=ZGTWERRP3'): # fix url where & is missing
-                    my_url =  my_url.split("inviteCode=")[0] + '&inviteCode=ZGTWERRP3'
+                my_url =  url.split("inviteCode=")[0] + '&inviteCode=ZGTWERRP3'
+                parsed_url = urlparse(my_url)
+                query_params = parse_qs(parsed_url.query)
+                desired_params = {
+                'url': query_params.get('url', [''])[0],
+                'inviteCode': query_params.get('inviteCode', [''])[0]}
+                new_query = urlencode(desired_params, doseq=True)
+                my_url = f"https://www.pandabuy.com/product?{new_query}"
+                print(my_url)
                     
                 return my_url
         
 
     except Exception as e:
-        pass
+        raise e
 
 # Create and run the asyncio event loop
 async def grab_links_runner(urls):
@@ -116,11 +124,19 @@ async def save_img(url,file_name):
         return file_path
         
 
-def check_brand(name):
+
+def set_brand_tag(name,arg):
     tags = []
-    sneaker_brands = {'dunks','travis','dunk','vt','nike','adidas', 'air','jordan', 'air force', 'yeezy', 'bapesta', 'balenciaga', 'converse', 'off white', 'mcqueen', 'new balance', 'sacai', 'acg mountain', 'air max', 'louis vuitton', 'amiri'}
+    clothing_vocabulary = {"jacket", "shirt", "t-shirt", "blouse", "sweater", "cardigan", "hoodie", "coat", "vest", "suit", "tie", "bow tie", "trousers", "jeans", "shorts", "skirt", "dress", "overalls", "jumpsuit", "blazer", "raincoat", "windbreaker", "trench coat", "poncho", "kimono", "onesie", "romper", "pajamas", "socks", "stockings", "tights", "leggings", "underwear", "bra", "panties", "boxers", "briefs", "swimsuit", "bikini", "flip-flops", "sneakers", "high heels", "sandals", "boots", "loafers", "oxfords", "espadrilles", "slippers", "scarf", "hat", "cap", "beanie", "gloves", "mittens", "sunglasses", "belt", "suspenders", "watch", "necklace", "earrings", "bracelet", "ring", "brooch", "cufflinks", "pocket square", "handbag", "backpack", "tote bag", "clutch", "wallet", "umbrella", "shawl", "tie pin", "cane", "hairband", "hairpin", "clogs", "moccasins"}
+    sneaker_brands = set({'dunks','travis','dunk','vt','nike','adidas', 'air','jordan', 'air force', 'yeezy', 'bapesta', 'balenciaga', 'converse', 'off white', 'mcqueen', 'new balance', 'sacai', 'acg mountain', 'air max', 'louis vuitton', 'amiri',"gucci", "louis vuitton", "chanel", "prada", "versace", "dior", "balenciaga", "fendi", "burberry", "givenchy", "valentino", "dolce & gabbana", "alexander mcqueen", "calvin klein", "ralph lauren", "tommy hilfiger", "michael kors", "coach", "marc jacobs", "kate spade", "yves saint laurent (ysl)", "hermes", "balmain", "celine", "off-white", "bottega veneta", "zara", "h&m", "mango", "topshop", "gap", "levi's", "diesel", "armani", "hugo boss", "lacoste", "puma", "nike", "adidas", "reebok", "converse", "new balance", "vans", "timberland", "dr. martens", "ugg", "north face", "patagonia", "columbia", "under armour", "champion", "supreme", "off-white", "bape", "vetements", "officine generale", "acne studios", "alexachung", "amiri", "nina ricci", "vivienne westwood", "isabel marant", "comme des garcons", "gareth pugh", "rick owens", "marni", "stella mccartney", "bally", "lanvin", "comme des garcons play", "comme des garcons shirt", "kenzo", "celine", "givenchy", "rick owens drkshdw", "maison margiela", "amiri", "palm angels", "fear of god", "rothco", "stone island", "neil barrett", "r13", "undercover", "junya watanabe", "kolor", "maison margiela", "issey miyake", "jil sander", "comme des garcons homme", "comme des garcons homme plus", "number (n)ine", "huf", "palace", "billionaire boys club", "a bathing ape", "supreme", "off-white"})
+    
+    if arg == 'clothing':
+        tag_set  = clothing_vocabulary
+    elif arg == 'brand':
+        tag_set = sneaker_brands
+
     for word in name.lower().split():
-        if word in sneaker_brands:
+        if word in tag_set:
             tags.append(word)
     return tags
 
@@ -167,8 +183,8 @@ async def fetch_data(url):
 
         response = await asyncio.to_thread(requests.get, new_url, headers=headers,timeout=10)
         if response.status_code == 200:
+            url = await shorter_link(url)
             upload_date = get_today_date()
-            
             req = json.loads(response.text)
            
             results = req['result']
@@ -178,14 +194,31 @@ async def fetch_data(url):
             img = results['itemMainPic']
             
             name = get_name(results['itemTitle'])
-            brand = check_brand(name)
+            brand = set_brand_tag(name,'brand')
+            clothing_type = set_brand_tag(name,'clothing')
             
-            return {'name':name,'img':img,'cny_price':cny_price,'link':url,'brand':brand,'upload_date':upload_date}
+            return {'name':name,'img':img,'cny_price':cny_price,'link':url,'brand':brand,'clothing_type':clothing_type,'upload_date':upload_date}
         else:
             print(response.url)
     except Exception as e:
         raise e
+    
+async def shorter_link(url) -> str:
+    try:
+        api_url ="https://www.pandabuy.com/gateway/user/proxyList/getInviteUrl"
+        data = {"link":url}
+        random_user_agent = random.choice(user_agents)
+        headers = {"User-Agent": random_user_agent,"Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpblRpbWUiOjE2OTY5NDkxMDgxMTgsInVzZXJfbmFtZSI6ImlkYW5hbGJhbTFAZ21haWwuY29tIiwic2NvcGUiOlsiYWxsIl0sImxvZ2luSXAiOiIxMDkuNjcuODcuMjMwIiwiaWQiOjc3NzE0MzAwNSwiZXhwIjoxNjk5MTA5MTA4LCJqdGkiOiIwOGY0ZWVkMC1kNDZjLTRhZTYtYmNjMi03Njk5YzNjMzYwMjEiLCJjbGllbnRfaWQiOiJwb3J0YWwtcGMiLCJwbGF0Zm9ybSI6bnVsbH0.oerQXCMo7b8MBtnevIiW_z2ToHMOoLCDcibRU84LfkwRVZdS38YeMB9bVOD-k-AdPFQebswa5oBIhXgIHK0jwkTECI256Gdj1CdSroWVNZJj36vM0Ayanu98sfqFZ1svvI1RFCBN4tFMSIFpLMrhkNragMws-gkmxy7PH7Gsz7A"}
 
+        response = await asyncio.to_thread(requests.post, api_url, headers=headers,timeout=10,data=data)
+        if response.status_code == 200:
+            response = response.json()
+            return (response['data'])
+            
+
+    except Exception:
+        raise Exception
+    
 async def get_data_runner(urls):
     tasks = [fetch_data(url) for url in urls if url is not None]
     results = await asyncio.gather(*tasks)
@@ -196,10 +229,10 @@ async def get_reviews_runner(urls):
     results = await asyncio.gather(*tasks)
     return results
 
+
 ####################
 def make_link(urls):
     return asyncio.run(grab_links_runner(urls))
-
 
 def save_imgs(urls,files_name):
     return asyncio.run(save_img_runner(urls,files_name))
@@ -209,3 +242,4 @@ def get_data(urls):
 
 def get_reviews(urls):
     return asyncio.run(get_reviews_runner(urls))
+

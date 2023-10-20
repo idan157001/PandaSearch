@@ -3,7 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 import firebase_admin
 from firebase_admin import credentials,db
-from link_maker import make_link,save_imgs,get_data,get_reviews
+from link_maker import make_link,save_imgs,get_data,get_reviews,shorter_link
 import re
 import random
 import string
@@ -13,7 +13,7 @@ from urllib.parse import urlparse, parse_qs
 import requests
 from dotenv import load_dotenv
 from typing import Union
-
+import asyncio
 load_dotenv()
 
 
@@ -29,26 +29,26 @@ class Items:
         self.ref = db.reference('/Items')
         self.new_ref = db.reference('/New_Items')
         self.folder_path = os.getenv('folder_path')
-        self.ref.get()
 
-    def set_items_links(self):
-        self.items_links = set()
+    def set_items_dict(self):
+        self.items_dict = {}
         data = self.ref.get()
-        if data:
-            for value in data.values():
-                self.items_links.add(value['link'])
+        for item_key, item_data in data.items():
+            self.items_dict[item_key] = (item_data.get("link", ""), item_data.get("reviews", 0))
 
-    def item_already_exits(self,node_name,link) -> Union[str,bool]:
+    def item_already_exits(self,item) -> bool:
         """
-        Check if item already exits in db by checking if link in db
+        Check if item already exits in db 
         """
-        id = ''.join(str(random.randint(1, 9)) for _ in range(10))
-        if link in self.items_links:
-            self.new_ref.child(node_name).delete()
-            print(f'{node_name} Deleted Already Exits ')
-            return False
-           
-        return node_name
+        item_name,item_link,item_reviews = item['name'],item['link'],item['reviews']
+
+        if item_name in self.items_dict: # if new_item_name already in db
+            if item_reviews > self.items_dict[item_name][1]: # if same name and more reviews on new item
+                self.ref.child(item_name).update({'link':item_link,'reviews':item_reviews})
+                print(f'{item_name} Exits')
+            return True
+        return False
+        
             
     def count_bad_rows(self):
         bad_row_count = 0
@@ -63,7 +63,7 @@ class Items:
         print(f'good rows: {good_row_count}, bad rows: {bad_row_count}')
 
     def is_bad_link(self,link):
-        return link.startswith('https://www.pandabuy.com/product') and link.endswith('&inviteCode=ZGTWERRP3')
+        return link.startswith('https://www.pandabuy.comhttps://www.pandabuy.com/product') and link.endswith('&inviteCode=ZGTWERRP3')
 
     """def remove_if_filename_not_in_db(self,items):
         data = self.ref.get()
@@ -122,10 +122,15 @@ class Items:
         except Exception as e:
             raise e
     
-    def get_links(self):
+    def update_short_link(self):
         data = self.ref.get()
         for x,y in data.items():
-            print(y['link'])
+            link = y['link']
+            if 'pandabuy.allapp.link' not in link:
+                new_link = (asyncio.run(shorter_link(link)))
+                print(x)
+                self.ref.child(x).update({"link":new_link})
+            
 
 
 
@@ -135,7 +140,7 @@ class New_Items(Items):
         self.credentials_file = r"C:\Users\Idan's PC\OneDrive\Desktop\Pandabuy\google_auth.json"
         self.config_google_auth()
         super().__init__()
-        self.set_items_links()
+        self.set_items_dict()
         
     def config_google_auth(self):
         #Configuration for the google authentication
@@ -173,16 +178,17 @@ class New_Items(Items):
         
 
         for index,item in enumerate(items):
-            node = self.item_already_exits(item['name'],item['link'])
-            if not node:
-                continue
+            
             rev = reviews[index]
             cny_price = item['cny_price']
             amount_in_usd = cny_price * cny_to_usd_rate
             dollar_price = f'{amount_in_usd:.2f}'
             item['dollar_price'] = dollar_price
             item['reviews'] = rev
-            
+            node = item['name']
+            exits = self.item_already_exits(item)
+            if exits:
+                continue
             if len(node) > 1 and rev > 10:
                 self.new_ref.child(node).set(item)
 
@@ -257,9 +263,9 @@ database = Items()
 new_items = New_Items()
 
 def runner():
-    spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1ffvM_fax9iuLEvqgIwprl7SMf2n0B8YaSLKXb843Wo4/htmlview?pru=AAABgurjdTc*cg2AYCugO3MpTM4qGBA62A#gid=0'
-    #database.remove_bad_files()
-    #new_items.upload_data(spreadsheet_url,1800,2000)
+    spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1j4of5mznL24dWs17rPrHuVWwSjzt76m1YkgIaPenOmQ/edit#gid=0'
+    database.remove_bad_files()
+    new_items.upload_data(spreadsheet_url,50,150)
     #new_items.save_img_into_file()
     #database.upload_newItems_to_items()
     #database.clear_new_items()
@@ -267,39 +273,18 @@ def runner():
 #runner()
 
 
-
-l = """https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5754585985&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5820935594&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5871037271&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5898752257&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5797969001&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5949999404&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5898830443&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5950011036&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5792590695&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5818724645&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5936479586&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5871031357&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5986541879&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=6040573658&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=6189034041&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5913460264&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=6091094168&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=6275645548&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5810007593&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-https://www.pandabuy.com/product?url=https://weidian.com/item.html?itemID=5894779214&utm_source=sal&utm_medium=pdb&utm_campaign=normal
-"""
 links = []
+l = """
+https://www.pandabuy.com/product?url=https%3A%2F%2Fweidian.com%2Fitem.html%3FitemID%3D4398017618%26spider_token%3D4572&inviteCode="""
 for i in l.split('\n'):
     if i:
         links.append(i.strip())
-        print(i)
         
         
-
-#######database.get_links()
-database.remove_bad_files()
-new_items.changing_new_items_links(links)
-new_items.save_img_into_file()
-database.upload_newItems_to_items()
+#database.remove_bad_files()
+#new_items.changing_new_items_links(links)
+#new_items.save_img_into_file()
+#database.upload_newItems_to_items()
 #new_items.clear_new_items()
+#new_items.update_short_link()
+

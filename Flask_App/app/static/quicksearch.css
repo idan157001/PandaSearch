@@ -1,0 +1,52 @@
+/* Styles for the quick search */
+.quick_search {
+  display: flex;
+  list-style: none; 
+  
+  
+}
+
+/* Ensure the first four items are visible */
+  .quick_search #brand {
+    color: white;
+    padding: 13px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .quick_search a {
+    text-decoration: none;
+    padding: 12px 16px;
+    border: 2px solid lightgray;
+    border-radius: 18px;
+    color: #de2c2c;
+    font-weight:bold;
+  }
+  
+ 
+  
+  
+/* Styles for the quick search on mobile */
+@media (max-width: 768px) {
+  .quick_search {
+    overflow-x: auto;
+    width: 100vw;
+    position: relative; /* Add this for positioning the indicator */
+    
+  }
+  
+  .quick_search li {
+    flex: 0 0 auto; /* Don't grow or shrink */
+    margin-right: 10px; /* Optional margin between items */
+  }
+
+  /* Hide the default scrollbar */
+  .quick_search::-webkit-scrollbar {
+    width: 0;
+  }
+  .quick_search #brand{
+    padding: 20px 0px;
+  }
+  
+}

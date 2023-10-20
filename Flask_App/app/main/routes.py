@@ -1,10 +1,8 @@
-from flask import request,render_template,send_from_directory
+from flask import request,render_template,send_from_directory,jsonify,redirect,url_for
 from . import main
 from app import limiter
 from .db import Search
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
 
 search_cls = Search()
@@ -18,24 +16,31 @@ def serve_image(filename):
 
 @main.route('/',methods=['GET'])
 @limiter.limit('5 per second')
+def home():
+    search = request.args.get('q','')
+    brands = search_cls.brand_quick_search()
+    top_items = search_cls.home_page_top_items()
 
-def index():
-    if request.method == 'GET':
-        return render_template('index.html')
-    
+    if search:
+        items = search_cls.search_runner(search)
+        return render_template('search.html',brands=brands,item=top_items,items=items)
+    else:
+        return render_template('search.html',brands=brands,item=top_items)
 
-@main.route('/search')
+
+
+
+@main.route('/search_products',methods=['POST'])
 @limiter.limit('5 per second')
-def search():
-    if request.method == 'GET': 
-        if 'item' in request.args:
-                user_item_arg = request.args['item']
-                items = search_cls.search_runner(user_item_arg)
-
-                if items is None:
-                    return render_template('search.html',error=True)
-                
-                elif items:
-                    return render_template('search.html',items=items)
-                
-        return render_template('search.html')
+def search_products():
+    if request.method == 'POST':
+        search_query = request.form['search_query']
+        
+        if search_query:
+            items = search_cls.search_runner(search_query)
+            if items is None:
+                return render_template('products.html',error=True)
+            elif items:
+                return render_template('products.html',items=items)
+       
+    

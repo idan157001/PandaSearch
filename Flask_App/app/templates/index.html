@@ -2,76 +2,68 @@
 <html lang="en">
 <head>
     {% block head %}
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PandaSearch</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='quicksearch.css') }}">
+
+    
+
     {% endblock head %}
-    <!-- Add your CSS links or inline styles here -->
 </head>
 <body>
+    <div class="navbar">
+        <img src="../static/images/icon.png">
+    </div>
     <header>
         
-        <!-- Add navigation links or other header content here -->
     </header>
 
     <main>
+        
+    {% block search_bar %}
         <div class="Search">
             <h2>Products</h2>
             <div class="Search_bar">
-            <form action="/search" method="get">
-                <input type="text" id="search" name="item" placeholder="" maxlength="30">
-                <button type="submit">Search</button>
+            <form action="/search" method="get" id="search_form" >
+                <input type="text" id="search" name="item" placeholder="" maxlength="30" autocomplete="off">
+                
             </form>
             <!-- Content for your web page goes here -->
             </div>
         </div>
-        {% if error %}
-            <p id="error">Item Not Found</p>
-        {% endif %}
+            {% if brands %}
+                <h3 id="qs_h3">Quick Search</h3>
+                    <div class="quick_search">
+                    <li id="brand"><a href="/search?item=all">All</a></li>
+                    {% for brand in brands%}
+                        <li id="brand"><a href="/search?item={{brand}}">{{brand.title()}}</a></li>
+                    {% endfor %}
+                    </div>
+            {% endif %}
+    {% endblock %}
 
-        {% if items %}
-            <div class="product_containers">
+                
+   
 
-            {% for item in items %}
-                    {%set item_link = item['link']%}
-                    {%set item_dollar = item['dollar_price']%}
-                    {%set item_cny = item['cny_price']%}
-                    {%set file_name = item['file_name']%}
-                    {%set reviews = item['reviews']%}
-                    <li class="product">
-                        <a href="{{item_link}}" target="_blank" >
-                            <img  class="product_img"src="/images/{{file_name}}" alt="{{item_name}}"></img>
-                        </a>
+    {% block content %} <!--block of content in <main>-->
 
-                            <div class="product_data">
-                                <p id="dollar_price">{{item_cny}}¥</p>
-                                <div class="stars-container">
-                                    {% if reviews > 10 %}
-                                        <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
-                                        {% if reviews > 50 %}
-                                            <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
-                                            {% endif %}
-                                        {% if reviews > 100 %}
-                                            <img class="star-icon" src="../static/299040_star_icon.png" alt="Filled Star">
-                                            {% endif %}
-                                        {% endif %}
-                                </div>
-                            </div>
 
-                            
-                    </li>
-                    
-            {% endfor %}
-            </div>
-        {% endif %}
-        
-        </div>
+    {% endblock%} 
+    
     </main>
 
     <footer>
         <!-- Footer content goes here -->
         <p></p>
     </footer>
+{%block scripts%}
+
+{% endblock %}
+
+
 </body>
+
 </html>

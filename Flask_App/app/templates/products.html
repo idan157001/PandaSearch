@@ -1,0 +1,34 @@
+<div class="product_containers">
+
+    {% for item in items %}
+            {%set item_link = item['link']%}
+            {%set item_dollar = item['dollar_price']%}
+            {%set item_cny = item['cny_price']%}
+            {%set file_name = item['file_name']%}
+            {%set reviews = item['reviews']%}
+            <li class="product">
+                <a href="{{item_link}}" target="_blank" >
+                    <img  class="product_img"src="/images/{{file_name}}" alt="{{item_name}}"></img>
+                </a>
+
+                    <div class="product_data">
+                        <p id="dollar_price">{{item_cny}}¥</p>
+                        <div class="stars-container">
+                            {% if reviews > 10 %}
+                                <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                {% if reviews > 50 %}
+                                    <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                    {% endif %}
+                                {% if reviews > 100 %}
+                                    <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                    {% endif %}
+                                {% endif %}
+                        </div>
+                    </div>
+
+                    
+            </li>
+            
+    {% endfor %}
+    </div>
+    
