@@ -187,7 +187,6 @@ li.product {
     height: auto; /* Maintain the aspect ratio */
     margin-bottom: 10px; /* Add margin for spacing */
     display: inline-block; /* Display items inline in a row */
-    float: left; /* Float items to the left */
     text-align: center; /* Center content horizontally */
     padding: 10px; /* Add padding for spacing and appearance */
     min-width: 80px;
