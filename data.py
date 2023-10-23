@@ -263,7 +263,7 @@ database = Items()
 new_items = New_Items()
 
 def runner():
-    spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1j4of5mznL24dWs17rPrHuVWwSjzt76m1YkgIaPenOmQ/edit#gid=0'
+    spreadsheet_url = ''
     database.remove_bad_files()
     new_items.upload_data(spreadsheet_url,50,150)
     #new_items.save_img_into_file()
@@ -274,12 +274,10 @@ def runner():
 
 
 links = []
-l = """
-https://www.pandabuy.com/product?url=https%3A%2F%2Fweidian.com%2Fitem.html%3FitemID%3D4398017618%26spider_token%3D4572&inviteCode="""
+l = """"""
 for i in l.split('\n'):
     if i:
         links.append(i.strip())
-        
         
 #database.remove_bad_files()
 #new_items.changing_new_items_links(links)

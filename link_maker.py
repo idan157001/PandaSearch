@@ -13,6 +13,8 @@ import cv2
 import numpy as np
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs, urlencode
+from dotenv import load_dotenv
+load_dotenv()
 
 
 My_Urls = []
@@ -202,13 +204,12 @@ async def fetch_data(url):
             print(response.url)
     except Exception as e:
         raise e
-    
 async def shorter_link(url) -> str:
     try:
         api_url ="https://www.pandabuy.com/gateway/user/proxyList/getInviteUrl"
         data = {"link":url}
         random_user_agent = random.choice(user_agents)
-        headers = {"User-Agent": random_user_agent,"Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpblRpbWUiOjE2OTY5NDkxMDgxMTgsInVzZXJfbmFtZSI6ImlkYW5hbGJhbTFAZ21haWwuY29tIiwic2NvcGUiOlsiYWxsIl0sImxvZ2luSXAiOiIxMDkuNjcuODcuMjMwIiwiaWQiOjc3NzE0MzAwNSwiZXhwIjoxNjk5MTA5MTA4LCJqdGkiOiIwOGY0ZWVkMC1kNDZjLTRhZTYtYmNjMi03Njk5YzNjMzYwMjEiLCJjbGllbnRfaWQiOiJwb3J0YWwtcGMiLCJwbGF0Zm9ybSI6bnVsbH0.oerQXCMo7b8MBtnevIiW_z2ToHMOoLCDcibRU84LfkwRVZdS38YeMB9bVOD-k-AdPFQebswa5oBIhXgIHK0jwkTECI256Gdj1CdSroWVNZJj36vM0Ayanu98sfqFZ1svvI1RFCBN4tFMSIFpLMrhkNragMws-gkmxy7PH7Gsz7A"}
+        headers = {"User-Agent": random_user_agent,"Authorization": os.getenv("getInviteUrl_authorization")}
 
         response = await asyncio.to_thread(requests.post, api_url, headers=headers,timeout=10,data=data)
         if response.status_code == 200:
@@ -243,3 +244,4 @@ def get_data(urls):
 def get_reviews(urls):
     return asyncio.run(get_reviews_runner(urls))
 
+print(os.getenv("getInviteUrl_authorization"))

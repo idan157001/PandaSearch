@@ -1,0 +1,70 @@
+#product_containers {
+
+}
+
+#product_containers .product {
+    margin-bottom: 10px;
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 15%;
+    padding-bottom: 1.5rem;
+}
+
+
+
+/* Create a 50px height space after every 5 images */
+
+
+li.product {
+    position: relative;
+    list-style: none;
+    height: auto; /* Maintain the aspect ratio */
+    margin-bottom: 10px; /* Add margin for spacing */
+    display: inline-block; /* Display items inline in a row */
+    text-align: center; /* Center content horizontally */
+    padding: 10px; /* Add padding for spacing and appearance */
+    min-width: 80px;
+    max-width: 300px; /* Limit the width */
+
+}
+
+li.product img {
+    width: 100%; /* Make images fill the width of their container */
+    max-height: 100%; /* Maintain the aspect ratio */
+    border-radius: 15%;
+}
+li.product p {
+    position: absolute;
+    left: 25px;
+    bottom: 2px
+}
+
+.product_data{
+    position: absolute;
+    width: auto; /* Allow the width to adjust responsively */
+    color: black;
+    box-sizing: border-box;
+    font-weight: bold; /* Make the text inside the <p> tag bold */
+    display: contents;
+
+}
+
+.product_data .stars-container{
+    position: absolute;
+    bottom: 3px;
+    right: 25px;
+    width: auto;
+    color: black;
+    box-sizing: border-box;
+    font-weight: bold;
+}
+
+.star-icon{
+    width: 20px !important;
+    display: inline;
+}
+.product_data p#dollar_price{
+    display: inline !important;
+}
