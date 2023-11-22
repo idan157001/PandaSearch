@@ -89,7 +89,7 @@ class Search:
         return None
 
 
-    def sort_search(self,search_text:str):
+    def sort_search(self,search_text:str) -> list:
         search_all = self.get_all_items(search_text)
         if search_all:
             return search_all
@@ -117,7 +117,7 @@ class Search:
 
     def brand_quick_search(self):
         """
-        make dict of brand sorted brands by items count related to specific brand
+        make list of dicts sorted by top brand in count in db e.g jordan:32 nike:21 yeezy:11...
         """
         data = self.ref.get()
         brands_dict = {brand:0 for brand in self.sneaker_brands}

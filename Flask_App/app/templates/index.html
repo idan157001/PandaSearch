@@ -1,49 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+
     {% block head %}
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=0">
+
+
     <title>PandaSearch</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/quicksearch.css') }}">
-
-    
-
     {% endblock head %}
 </head>
-<body>
-    <div class="navbar">
-        <img src="../static/images/icon.png">
-    </div>
+<body class="bg-background_img overflow-x-hidden">
     <header>
-        
-    </header>
-
-    <main>
-        
-    {% block search_bar %}
-        <div class="Search">
-            <h2>Products</h2>
-            <div class="Search_bar">
-            <form action="/search" method="get" id="search_form" >
-                <input type="text" id="search" name="item" placeholder="" maxlength="30" autocomplete="off">
-                
-            </form>
-            <!-- Content for your web page goes here -->
+      <nav class="bg-transparent dark:bg-transparent z-20 top-0 left-0 right-0 border-b border-gray-200 dark:border-gray-600 relative mx-auto mb-4 mt-2 w-full xl:w-1/2">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="/" class="flex items-center text-white">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABfVBMVEUAAAD////////////////////V1dV1dXVLS0s/Pz9jY2O5ubnGxsZra2tDQ0NHR0dvb2/IyMimpqY2NjYzMzOBgYGXl5eRkZHU1NTQ0NDAwMB0dHRlZWXHx8fS0tJxcXFeXl43NzelpaW3t7c9PT04ODj7+/s7OzvPz8/e3t5ERET09PRkZGTBwcHT09NNTU26urqtra2jo6ODg4P39/e9vb1/f3+urq7x8fGEhIR+fn6wsLD+/v5XV1f9/f3i4uLc3NxpaWnk5OScnJyxsbHNzc2VlZWrq6uSkpKTk5NaWlpMTEzl5eWPj492dnaZmZk8PDx5eXmWlpbo6Oizs7M0NDR9fX3X19c1NTVAQECdnZ22traMjIzf39+np6fm5ubMzMzw8PDz8/OHh4dfX1+Li4uampo+Pj5KSkq7u7vY2Nj8/Pzb29tQUFCvr6/Dw8NTU1NtbW2YmJj4+PhmZmZ6eno6Ojrr6+tBQUGqqqra2trj4+NycnJgYGCioqJY9WTKAAAABnRSTlMAHKbm/+1DRvRuAAABr0lEQVR4AYXTg3rGMACF4eLMXs9s27Zt27aNa1+TNPP2v4/br4gMw7Rs/MG2TPe+H/7hZxoWAP+AwKDgEHwIDQuPiIyCyzJsINqhEAMtllIcANsA4h0q+h0J9CQCMIAkSskp0FLTKKWrIJCujEx8lpVNV06uDIJI5uXjq4JCuopkUEw6JfiuNI8sgwzKyVj8VEFWqgBVEdVATVVtXT2E6qyGxqZmNLdEtnoB2txI/lRSPtpr5f91tKKzFTKQUkh2kexGD5nXS7IPkg76ycrqgcG8ImAoJ3R4JIKjX4Mx5lUlpI5PAJgMrJqanuHs12BunmxYYCqAqRyOOGTN1wCZGeTMIoSlHJLL+BZgZbWyHajoX2zF2mqlPz4H63gXQWcD2roXtAVtQuuZCIGWW1iqgi3W4jdxTFLBNrlTje9yd98Xa4/k/uTBYS60o+OasROSM9UyCKeydwrlQF+ZydX7wXMGodSh5xwyWKV2AaGW2qUKrgI/PwFc03NypQK5u6QbCDtUMvIhAhvASjqF2xUId/fqdXOQB8eS43ooDt8Le4Ty9Hwf9PJ6BcHyfXh9Hf83B6xNitxXtUgAAAAASUVORK5CYII=" class="h-8 mr-3" alt="PandaBuy Icon">
+              <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">PandaSearch</span>
+            </a>
+            <div class="flex md:order-2">
+              <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-transparent dark:focus:ring-gray-600" aria-controls="navbar-sticky" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                </svg>
+              </button>
             </div>
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1 ml-auto" id="navbar-sticky">
+              <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-transparent md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-transparent dark:bg-transparent md:dark:bg-transparent dark:border-gray-700">
+                <li>
+                  <a href="#" class="block py-2 pl-3 pr-4 text-white rounded hover:bg-transparent md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover-text-blue-500 dark:text-white dark:hover-bg-transparent dark:hover-text-white md:dark-hover-bg-transparent dark-border-gray-700">About</a>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+    </header>
+    
+    
+
+    <main class="relative w-4/5 mx-auto mt-8">
+     
+        <form class="flex items-center" action="/search" method="get" id="search_form">   
+        <div class="relative pt-10 mx-auto flex items-center w-full md:w-1/2"> <!-- Added "flex items-center" here -->
+            <input id="search" name="item" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search product..." required>
+            <button type="submit" class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg class="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+            </button>
         </div>
-            {% if brands %}
-                <h3 id="qs_h3">Quick Search</h3>
-                    <div class="quick_search">
-                    <li id="brand"><a href="/search?item=all">All</a></li>
-                    {% for brand in brands%}
-                        <li id="brand"><a href="/search?item={{brand}}">{{brand.title()}}</a></li>
-                    {% endfor %}
-                    </div>
-            {% endif %}
-    {% endblock %}
+      </form>
+      <div id="quicksearch" class="font-bold flex flex-nowrap overflow-x-auto md:justify-center mt-4">
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">All</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Jordan</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Air</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Nike</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Travis</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Yeezy</a>
+    </div>
+    
+    
+
 
                 
    

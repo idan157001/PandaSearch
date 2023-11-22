@@ -1,6 +1,6 @@
 from flask import request,render_template,send_from_directory,jsonify,redirect,url_for
 from . import main
-from app import limiter
+from .. import limiter
 from .db import Search
 import os
 
@@ -25,8 +25,8 @@ def home():
         items = search_cls.search_runner(search)
         if items:
             return render_template('search.html',brands=brands,item=top_items,items=items)
-        else:
-            return render_template('search.html',brands=brands,item=top_items)
+        
+    return render_template('search.html',brands=brands,item=top_items)
 
 
 
