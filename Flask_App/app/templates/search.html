@@ -5,41 +5,6 @@
 {% block content %}
     <div id="search-results"></div>
     
-    {% if items %}
-    <div id="product_containers" class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
-
-        {% for item in items %}
-                {%set item_link = item['link']%}
-                {%set item_dollar = item['dollar_price']%}
-                {%set item_cny = item['cny_price']%}
-                {%set file_name = item['file_name']%}
-                {%set reviews = item['reviews']%}
-                <li class="product">
-                    <a href="{{item_link}}" target="_blank" >
-                        <img  class="product_img"src="/images/{{file_name}}" alt="{{item_name}}"></img>
-                    </a>
-
-                        <div class="product_data">
-                            <p id="dollar_price">{{item_cny}}¥</p>
-                            <div class="stars-container">
-                                {% if reviews > 10 %}
-                                    <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
-                                    {% if reviews > 50 %}
-                                        <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
-                                        {% endif %}
-                                    {% if reviews > 100 %}
-                                        <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
-                                        {% endif %}
-                                    {% endif %}
-                            </div>
-                        </div>
-
-                        
-                </li>
-                
-        {% endfor %}
-        </div>
-{% endif %}
 {% endblock%}
 
 
@@ -48,6 +13,15 @@
 
 <script>
     $(document).ready(function() {
+        function get_query(){
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("q")) {
+                const queryValue = urlParams.get("q");
+                
+                sendAjaxRequest(queryValue)
+            }
+        }
+        get_query()
         $('#search_form').submit(function(event) {
             event.preventDefault();
             var searchQuery = $('#search').val();
@@ -74,6 +48,8 @@
                 error: function(err) {
                     // Handle any errors here
                     console.error(err);
+                    
+
                 }
             });
         }

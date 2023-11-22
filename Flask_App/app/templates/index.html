@@ -7,7 +7,8 @@
     {% block head %}
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=0">
+
 
     <title>PandaSearch</title>
     {% endblock head %}
@@ -42,8 +43,7 @@
     
 
     <main class="relative w-4/5 mx-auto mt-8">
-      
-      
+     
         <form class="flex items-center" action="/search" method="get" id="search_form">   
         <div class="relative pt-10 mx-auto flex items-center w-full md:w-1/2"> <!-- Added "flex items-center" here -->
             <input id="search" name="item" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search product..." required>
@@ -54,14 +54,16 @@
             </button>
         </div>
       </form>
-      <div id="quicksearch" class="font-bold flex justify-center">
-        <a href="#" class="block text-center p-3 bg-gray-400 text-white m-2 rounded-full">Jordan</a>
-        <a href="#" class="block text-center p-3 bg-gray-400 text-white m-2 rounded-full">Air</a>
-        <a href="#" class="block text-center p-3 bg-gray-400 text-white m-2 rounded-full">Nike</a>
-        <a href="#" class="block text-center p-3 bg-gray-400 text-white m-2 rounded-full">Travis</a>
-        <a href="#" class="block text-center p-3 bg-gray-400 text-white m-2 rounded-full">Yeezy</a>
-
-      </div>
+      <div id="quicksearch" class="font-bold flex flex-nowrap overflow-x-auto md:justify-center mt-4">
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">All</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Jordan</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Air</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Nike</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Travis</a>
+        <a href="#" class="block text-center p-2 bg-gray-400 text-white m-1 rounded-full" style="min-width: 80px;">Yeezy</a>
+    </div>
+    
+    
 
 
                 

@@ -89,7 +89,7 @@ class Search:
         return None
 
 
-    def sort_search(self,search_text:str):
+    def sort_search(self,search_text:str) -> list:
         search_all = self.get_all_items(search_text)
         if search_all:
             return search_all

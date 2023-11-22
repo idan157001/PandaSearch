@@ -1,6 +1,6 @@
 from flask import request,render_template,send_from_directory,jsonify,redirect,url_for
 from . import main
-from app import limiter
+from .. import limiter
 from .db import Search
 import os
 

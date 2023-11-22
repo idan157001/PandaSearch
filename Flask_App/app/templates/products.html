@@ -1,6 +1,13 @@
 
+{% if error %}
+<div id="error_message" class="flex text-red-600 justify-center mt-4 text-3xl">
+    <p>Item Not Found</p>
+</div>
+
+
+{% endif %}
 {% if items %}
-    <div id="product_containers" class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
+    <div id="product_containers" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pt-12">
 
         {% for item in items %}
                 {%set item_link = item['link']%}
@@ -8,21 +15,23 @@
                 {%set item_cny = item['cny_price']%}
                 {%set file_name = item['file_name']%}
                 {%set reviews = item['reviews']%}
-                <li class="product">
+                <li class="mb-2 inline-block text-center p-2 bg-gray-400 pb-6 rounded-2xl relative">
                     <a href="{{item_link}}" target="_blank" >
-                        <img  class="product_img"src="/images/{{file_name}}" alt="{{item_name}}"></img>
+                        <img  class="w-full rounded-2xl"src="/images/{{file_name}}" alt="{{item_name}}"></img>
                     </a>
 
-                        <div class="product_data">
-                            <p id="dollar_price">{{item_cny}}¥</p>
-                            <div class="stars-container">
+                        <div class="absolute w-auto" style="width: 100%;">
+                            <div class="absolute left-0 font-bold text-base">
+                                <p>{{item_cny}}¥</p>
+                            </div>
+                            <div class="absolute right-4">
                                 {% if reviews > 10 %}
-                                    <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                    <img class="w-5 inline" src="../static/images/299040_star_icon.png" alt="Filled Star">
                                     {% if reviews > 50 %}
-                                        <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                        <img class="w-5 inline" src="../static/images/299040_star_icon.png" alt="Filled Star">
                                         {% endif %}
                                     {% if reviews > 100 %}
-                                        <img class="star-icon" src="../static/images/299040_star_icon.png" alt="Filled Star">
+                                        <img class="w-5 inline" src="../static/images/299040_star_icon.png" alt="Filled Star">
                                         {% endif %}
                                     {% endif %}
                             </div>
